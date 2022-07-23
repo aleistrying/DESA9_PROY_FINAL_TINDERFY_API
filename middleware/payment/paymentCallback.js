@@ -8,8 +8,12 @@ module.exports = async (req, res) => {
     const { query, body } = req
     console.log({ query })
     try {
-        if (query["Estado"] === "Denegada")
-            return res.status(400).json({ success: false, error: "El pago negado, volver a intentar con otra tarjeta o agregar fondos porfavor." })
+        if (query["Estado"] === "Denegada") {
+            console.log("redirecting to failure url:", `${FRONTEND_URL}/payment/failure?${new URLSearchParams(query)}`)
+            return res.redirect(`${FRONTEND_URL}/payment/failure?${new URLSearchParams(query)}`)
+        }
+
+        // return res.status(200).json({ success: false, error: "El pago negado, volver a intentar con otra tarjeta o agregar fondos porfavor." })
 
         //get user
         const user = await Users.findOne({
@@ -55,6 +59,7 @@ module.exports = async (req, res) => {
         newSubscription.__v = undefined;
 
         // return res.status(200).json({ success: true, subscription: newSubscription })
+        console.log("redirecting to success url:", `${FRONTEND_URL}/payment/success?${new URLSearchParams(query)}`)
         return res.redirect(`${FRONTEND_URL}/payment/success?${new URLSearchParams(newSubscription)}`)
     } catch (e) {
         console.log(e)

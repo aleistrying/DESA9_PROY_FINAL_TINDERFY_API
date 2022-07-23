@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { checkToken, isAdmin } = require("../middleware/auth");
-const { createUser, getUsers, getUser, updateUser, deleteUser } = require("../middleware/users")
+const { createUser, getUsers, getUser, updateUser, deleteUser, getUserSubscription } = require("../middleware/users")
 
 // create user
 router.post("/", createUser);
@@ -17,5 +17,7 @@ router.put("/:id", checkToken, isAdmin, updateUser);
 // delete user by id
 router.delete("/:id", checkToken, isAdmin, deleteUser);
 
+//get the subscription accossiated with the user
+router.get("/subscription", checkToken, getUserSubscription);
 
 module.exports = router;

@@ -38,6 +38,8 @@ mongoose.connect(mongoDb, { useNewUrlParser: true, useUnifiedTopology: true })
 
         //main
         app.use(cors())
+
+        // Enable CORS
         app.use(express.json());
         app.use((req, res, next) => {
             //log every route name

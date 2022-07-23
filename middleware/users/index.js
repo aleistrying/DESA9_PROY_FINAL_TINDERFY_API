@@ -6,4 +6,5 @@ module.exports = {
     deleteUser: require("./deleteUser"),
     likeSong: require("./likeSong"),
     getLikedSongs: require("./getLikedSongs"),
+    getUserSubscription: require("./getUserSubscription"),
 }

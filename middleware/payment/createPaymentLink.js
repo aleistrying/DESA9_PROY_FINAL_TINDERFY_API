@@ -49,6 +49,7 @@ module.exports = async (req, res) => {
         try {
             const { data } = await axios.post(`${PAGUELOFACIL_URL}/LinkDeamon.cfm?${new URLSearchParams(paymentInfo).toString()}`, paymentInfo)
             if (data.headerStatus.code === 200)
+                // return res.redirect(data.data.url)
                 return res.json({ success: true, link: data.data.url })
 
             return res.json({ success: false, error: data.headerStatus.description })

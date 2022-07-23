@@ -133,7 +133,7 @@ console.timeEnd("Loaded Keys")
 module.exports = {
     PORT: Number(PORT),
     URL: isProduction ? "https://api.tinderfy.com" : "http://localhost:5000",
-    FRONTEND_URL: isProduction ? "https://www.tinderfy.com" : "http://localhost",
+    FRONTEND_URL: isProduction ? "https://www.tinderfy.com" : "http://localhost:3000",
 
     MONGODB_USER: isProduction ? PROD_MONGODB_USER : DEV_MONGODB_USER,
     MONGODB_PASSWORD: isProduction ? PROD_MONGODB_PASSWORD : DEV_MONGODB_PASSWORD,

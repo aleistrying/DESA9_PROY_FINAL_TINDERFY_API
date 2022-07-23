@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
         updateObject.lastname = req.body?.lastname || user.lastname
         updateObject.password = req.body?.password || user.password
         updateObject.gender = req.body?.gender || user.gender
-        updateObject.age = new Date(req.body?.age || user.age)
+        // updateObject.age = new Date(req.body?.age || user.age)
         updateObject.birthday = new Date(req.body?.birthday || user.birthday)
 
         const validation = validate(updateObject);

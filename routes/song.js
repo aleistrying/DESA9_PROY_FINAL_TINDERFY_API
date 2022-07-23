@@ -1,13 +1,15 @@
 const router = require("express").Router();
 const { isAdmin, checkToken } = require("../middleware/auth");
 const { likeSong, getLikedSongs } = require("../middleware/users");
-const { createSong, getSongs, deleteSong, updateSong } = require("../middleware/songs");
+const { createSong, getSongs, deleteSong, updateSong, getNextRandomSong } = require("../middleware/songs");
 
 // Create song
 router.post("/", checkToken, isAdmin, createSong);
 
 // Get all songs
 router.get("/", checkToken, getSongs);
+
+router.get("/nextRandom", checkToken, getNextRandomSong);
 
 // Update song
 router.put("/:id", checkToken, isAdmin, updateSong);

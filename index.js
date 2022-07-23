@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require('cors')
 const app = express();
+const nodeSchedule = require("node-schedule");
 //routes
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
@@ -14,6 +15,7 @@ const subscriptionTypeRoutes = require("./routes/subscriptionType");
 const subscriptionRoutes = require("./routes/subscription");
 const searchRoutes = require("./routes/search");
 const paymentRoutes = require("./routes/payment");
+const { Users } = require("./models/users");
 
 const {
     PORT,
@@ -37,6 +39,11 @@ mongoose.connect(mongoDb, { useNewUrlParser: true, useUnifiedTopology: true })
         //main
         app.use(cors())
         app.use(express.json());
+        app.use((req, res, next) => {
+            //log every route name
+            console.log(req.url)
+            next();
+        })
 
 
         app.use("/api/pay", paymentRoutes)
@@ -51,6 +58,13 @@ mongoose.connect(mongoDb, { useNewUrlParser: true, useUnifiedTopology: true })
         app.listen(PORT, () => {
             console.log("listening on port: " + PORT);
         })
+        //setup a cron to update every user every day at midnight
+        nodeSchedule.scheduleJob("0 0 0 * * *", async () => {
+            console.log("updating users quota")
+            const updatesResults = await Users.updateMany({}, { dailySongsRequested: 0 });
+            console.log(updatesResults)
+        })
+
     })
     .catch(err => {
         console.log("error al iniciar", err);

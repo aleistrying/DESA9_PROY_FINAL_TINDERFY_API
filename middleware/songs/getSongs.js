@@ -6,10 +6,10 @@ module.exports = async (req, res) => {
         if (songs.length)
             res.status(200).send({ success: true, songs });
         else
-            res.status(404).send({ success: false, error: "No hay canciones" });
+            res.status(200).send({ success: false, error: "No hay canciones" });
     } catch (e) {
-        console.log(e)
-        res.status(400).send({
+        console.log({ e })
+        res.status(200).send({
             success: false,
             error: e
         });

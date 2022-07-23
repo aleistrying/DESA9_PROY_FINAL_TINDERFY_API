@@ -8,7 +8,8 @@ module.exports = async (req, res) => {
     try {
         const user = await Users.findById(req.params.id).select({
             _id: 1, name: 1, lastname: 1, email: 1, // password:1,
-            age: 1, subscription: 1, gender: 1,
+            // age: 1,
+            subscription: 1, gender: 1,
             birthday: 1, likedSongs: 1, permission: 1,
         }).lean()
 

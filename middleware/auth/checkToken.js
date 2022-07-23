@@ -16,10 +16,10 @@ module.exports = async (req, res, next) => {
         if (verify) {
             next();
         } else {
-            res.status(401).send({ success: false, error: "No tienes autorización" });
+            res.status(200).send({ success: false, error: "No tienes autorización", logout: true });
         }
     } catch (e) {
-        return res.status(400).send({ success: false, error: "Token Invalido" });
+        return res.status(400).send({ success: false, error: "Token Invalido", logout: true });
     }
 
 }

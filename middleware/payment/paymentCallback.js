@@ -1,7 +1,7 @@
 const { Subscriptions } = require("../../models/Subscriptions");
 const { Users } = require("../../models/users");
 const crypto = require("crypto");
-const { PUB_RSA_KEY } = require("../../config");
+const { FRONTEND_URL, PUB_RSA_KEY } = require("../../config");
 const mongoose = require("mongoose");
 
 module.exports = async (req, res) => {
@@ -54,7 +54,8 @@ module.exports = async (req, res) => {
         })
         newSubscription.__v = undefined;
 
-        return res.status(200).json({ success: true, subscription: newSubscription })
+        // return res.status(200).json({ success: true, subscription: newSubscription })
+        return res.redirect(`${FRONTEND_URL}/payment/success?${new URLSearchParams(newSubscription)}`)
     } catch (e) {
         console.log(e)
         return res.status(400).json({ success: false, error: "Error al crear una subscripcion" })

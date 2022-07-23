@@ -5,4 +5,5 @@ module.exports = {
     updateSong: require("./updateSong"),
     deleteSong: require("./deleteSong"),
     searchSong: require("./searchSong"),
+    getNextRandomSong: require("./getNextRandomSong"),
 }

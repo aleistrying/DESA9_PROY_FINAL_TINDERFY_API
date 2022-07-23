@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
             name: req.body.name,
             lastname: req.body.lastname,
             email: req.body.email,
-            age: req.body.age,
+            // age: req.body.age,
             gender: req.body.gender,
             birthday: new Date(req.body.birthday),
 

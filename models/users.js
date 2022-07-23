@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema({
     lastname: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    age: { type: Number, required: true },
+    // age: { type: Number, required: true },
     subscription: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "subscriptions",
@@ -24,6 +24,8 @@ const userSchema = mongoose.Schema({
         default: {}
     },
     paymentToken: { type: String, default: null },
+    dailySongsRequested: { type: Number, default: 0 },
+    songLimit: { type: Number, default: 2 },
 })
 
 userSchema.methods.generateAuthToken = function () {
@@ -64,9 +66,9 @@ function validate(user) {
         else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\.])[A-Za-z\d@$!%*?&\.]{8,}$/g.test(user.password))
             return { success: false, error: "La contraseña debe tener al menos una letra minúscula, una mayúscula, un número y un caracter especial @$!%*?&." }
     }
-    else if (typeof user.age !== "number"
-        && user.age >= 13 && user.age <= 120)
-        return { success: false, error: "La edad del usuario debe ser valida." }
+    // else if (typeof user.age !== "number"
+    // && user.age >= 13 && user.age <= 120)
+    // return { success: false, error: "La edad del usuario debe ser valida." }
     else if (typeof user.gender !== "string"
         && !["m", "f", "o"].includes(user.gender))
         return { success: false, error: "El genero del usuario debe ser valido." }

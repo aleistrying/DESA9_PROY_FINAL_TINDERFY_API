@@ -10,6 +10,7 @@ const nodeSchedule = require("node-schedule");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const songRoutes = require("./routes/song");
+const musicRoutes = require("./routes/music");
 const playlistRoutes = require("./routes/playlist");
 const subscriptionTypeRoutes = require("./routes/subscriptionType");
 const subscriptionRoutes = require("./routes/subscription");
@@ -50,6 +51,7 @@ mongoose.connect(mongoDb, { useNewUrlParser: true, useUnifiedTopology: true })
 
         app.use("/api/pay", paymentRoutes)
         app.use("/api/songs", songRoutes)
+        app.use("/api/music", musicRoutes)
         app.use("/api/users", userRoutes)
         app.use("/api/auth", authRoutes)
         app.use("/api/playlists", playlistRoutes)

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { V4 } = require('paseto');
-const { PRIVATE_KEY } = require("../config");
+const crypto = require('crypto')
+const { PRIVATE_KEY, JWT_ISSUER } = require("../config");
 
 const userSchema = mongoose.Schema({
     name: { type: String, required: true },
@@ -30,12 +31,12 @@ userSchema.methods.generateAuthToken = function () {
         return V4.sign({
             sub: this._id,
             iat: Date.now(),
-            iss: config.JWT_ISSUER,
+            iss: JWT_ISSUER,
         }, PRIVATE_KEY, {
             expiresIn: "2 hours",
         })
     } catch (err) {
-        console.log(err)
+        console.log({ err })
         return null
     }
 }
@@ -69,7 +70,7 @@ function validate(user) {
     else if (typeof user.gender !== "string"
         && !["m", "f", "o"].includes(user.gender))
         return { success: false, error: "El genero del usuario debe ser valido." }
-    else if (typeof user.birthday !== "object"
+    else if (typeof new Date(user.birthday) !== "object"
         || new Date(user.birthday).toString() === "Invalid Date")
         return { success: false, error: "La fecha de nacimiento debe ser valida." }
 

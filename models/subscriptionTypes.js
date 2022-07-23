@@ -6,7 +6,7 @@ const subscriptionTypesSchema = new mongoose.Schema({
     benefits: [String],
     maxSwipes: Number,
     image: String,//maybe
-    category: String,//maybe
+    // category: String,//maybe
     createdAt: {
         type: Date,
         default: Date.now

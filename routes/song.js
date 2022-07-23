@@ -1,6 +1,4 @@
 const router = require("express").Router();
-const { User } = require("../models/users");
-const { Song, validate } = require("../models/songs");
 const { isAdmin, checkToken } = require("../middleware/auth");
 const { likeSong, getLikedSongs } = require("../middleware/users");
 const { createSong, getSongs, deleteSong, updateSong } = require("../middleware/songs");

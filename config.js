@@ -21,51 +21,119 @@ const {
     PAGUELOFACIL_TOKEN,
     PAGUELOFACIL_PROD_URL,
     PAGUELOFACIL_DEV_URL,
+    SUPER_SECRET,
 } = process.env
 
 const isProduction = PRODUCTION === "true"
-//generate public and private keys if they dont' exist
+let PUB_RSA_KEY, PRI_RSA_KEY;
+//RSA
+try {
+    PRI_RSA_KEY = crypto.createPrivateKey({
+        key: fs.readFileSync('./private.rsa.key', 'utf8'),
+        format: "pem",
+        passphrase: SUPER_SECRET
+    })
+    PUB_RSA_KEY = crypto.createPublicKey({
+        key: fs.readFileSync('./public.rsa.key', 'utf8'),
+        format: "pem",
+        passphrase: SUPER_SECRET
+    })
+} catch (e) {
+    console.log("No keys found.")
+    // console.log(e)
+}
+if (!PUB_RSA_KEY || !PRI_RSA_KEY) {
+    console.time("\x1b[31mGenerating keys 2...\x1b[0m")
+    const { publicKey,
+        privateKey } = crypto.generateKeyPairSync('rsa', {
+            modulusLength: 4096,
+            publicKeyEncoding: {
+                type: "spki",
+                format: 'pem'
+            },
+            privateKeyEncoding: {
+                type: "pkcs8",
+                format: 'pem',
+                cipher: 'aes-256-cbc',
+                passphrase: SUPER_SECRET
+            }
+        });
 
+    PRI_RSA_KEY = crypto.createPrivateKey({
+        key: privateKey,
+        format: "pem",
+        passphrase: SUPER_SECRET
+    })
+    PUB_RSA_KEY = crypto.createPublicKey({
+        key: publicKey,
+        format: "pem",
+        passphrase: SUPER_SECRET
+    })
+
+    fs.writeFileSync('./private.rsa.key', privateKey)
+    fs.writeFileSync('./public.rsa.key', publicKey)
+
+    console.timeEnd("\x1b[31mGenerating keys 2...\x1b[0m")
+}
+//generate public and private keys if they dont' exist
 let PRIVATE_KEY, PUBLIC_KEY;
 
 console.time("Loaded Keys")
 try {
-    PRIVATE_KEY = fs.readFileSync('./private.key', 'utf8')
-    PUBLIC_KEY = fs.readFileSync('./public.key', 'utf8')
+    PRIVATE_KEY = crypto.createPrivateKey({
+        key: fs.readFileSync('./private.key', 'utf8'),
+        format: "pem",
+        passphrase: SUPER_SECRET
+    })
+    PUBLIC_KEY = crypto.createPublicKey({
+        key: fs.readFileSync('./public.key', 'utf8'),
+        format: "pem",
+        passphrase: SUPER_SECRET
+    })
 } catch (e) {
     console.log("No keys found.")
     // console.log(e)
 }
 if (!PRIVATE_KEY || !PUBLIC_KEY) {
-    console.time("\x1b[31mGenerating keys...\x1b[0m")
+    console.time("\x1b[31mGenerating keys 2...\x1b[0m")
     const { publicKey,
-        privateKey } = crypto.generateKeyPairSync('rsa', {
+        privateKey } = crypto.generateKeyPairSync('ed25519', {
             modulusLength: 4096,
             publicKeyEncoding: {
-                type: 'pkcs1',
+                type: "spki",
                 format: 'pem'
             },
             privateKeyEncoding: {
-                type: 'pkcs1',
+                type: "pkcs8",
                 format: 'pem',
                 cipher: 'aes-256-cbc',
-                passphrase: ''
+                passphrase: SUPER_SECRET
             }
         });
 
-    PRIVATE_KEY = privateKey
-    PUBLIC_KEY = publicKey
+    PRIVATE_KEY = crypto.createPrivateKey({
+        key: privateKey,
+        format: "pem",
+        passphrase: SUPER_SECRET
+    })
+    PUBLIC_KEY = crypto.createPublicKey({
+        key: publicKey,
+        format: "pem",
+        passphrase: SUPER_SECRET
+    })
 
-    fs.writeFileSync('./private.key', PRIVATE_KEY)
-    fs.writeFileSync('./public.key', PUBLIC_KEY)
+    fs.writeFileSync('./private.key', privateKey)
+    fs.writeFileSync('./public.key', publicKey)
 
-    console.timeEnd("\x1b[31mGenerating keys...\x1b[0m")
+    console.timeEnd("\x1b[31mGenerating keys 2...\x1b[0m")
 }
 console.timeEnd("Loaded Keys")
 
 
 module.exports = {
     PORT: Number(PORT),
+    URL: isProduction ? "https://tinderfy.com" : "http://localhost:5000",
+
     MONGODB_USER: isProduction ? PROD_MONGODB_USER : DEV_MONGODB_USER,
     MONGODB_PASSWORD: isProduction ? PROD_MONGODB_PASSWORD : DEV_MONGODB_PASSWORD,
     MONGODB_DB: isProduction ? PROD_MONGODB_DB : DEV_MONGODB_DB,
@@ -75,7 +143,12 @@ module.exports = {
     PUBLIC_KEY,
     PRIVATE_KEY,
 
+    PUB_RSA_KEY,
+    PRI_RSA_KEY,
+
     PAGUELOFACIL_CCLW,
     PAGUELOFACIL_TOKEN,
     PAGUELOFACIL_URL: isProduction ? PAGUELOFACIL_PROD_URL : PAGUELOFACIL_DEV_URL,
+
+    JWT_ISSUER: "Tinderfy",
 }

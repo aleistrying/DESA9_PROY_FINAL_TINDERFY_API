@@ -13,9 +13,10 @@ module.exports = async (req, res) => {
         if (!validPassword)
             return res.status(400).json({ success: false, message: "Correo o password Invalido" });
 
-        const token = user.generateAuthToken();
+        const token = await user.generateAuthToken();
         res.status(200).json({ success: true, token });
     } catch (err) {
-        res.status(400).json({ success: false, message: "Correo o password Invalido." });
+        console.log({ err })
+        res.status(400).json({ success: false, message: "Ha sucedido un error" });
     }
 }

@@ -1,14 +1,15 @@
-const Subscriptions = require("../../models/Subscriptions");
-const SubscriptionTypes = require("../../models/SubscriptionTypes");
-const axios = requiere("axios");
-const { PAGUELOFACIL_CCLW } = require("../../config/paguelofacil");
-const { createTestScheduler } = require("jest");
+const { Subscriptions } = require("../../models/Subscriptions");
+const { SubscriptionTypes } = require("../../models/SubscriptionTypes");
+const mongoose = require("mongoose");
+const axios = require("axios");
+const crypto = require("crypto")
+const { PAGUELOFACIL_CCLW, URL, PAGUELOFACIL_URL, PRI_RSA_KEY } = require("../../config");
 
 module.exports = async (req, res) => {
 
     try {
         //validate
-        if (!Types.ObjectId.isValid(req.params.id))
+        if (!mongoose.Types.ObjectId.isValid(req.params.id))
             return res.status(400).json({ success: false, error: "subscriptionTypeId is invalid" })
 
         //check if it exists
@@ -37,24 +38,27 @@ module.exports = async (req, res) => {
             CCLW: PAGUELOFACIL_CCLW,
             CMTN: subscriptionType.price,
             CDSC: "Compra de " + subscriptionType.name,
-            CTAX: subscriptionType.price * 0.07,
-            RETURN_URL: Buffer.from("http://localhost:3000/payment/callback").toString("hex"),
-            PARM_1: userToken,
+            CTAX: Math.round(subscriptionType.price * 0.07 * 100) / 100,
+            RETURN_URL: Buffer.from(URL + "/api/pay/callback").toString("hex"),
+            TOKEN: userToken.toLowerCase(),
+            SUB_ID: crypto.privateEncrypt(PRI_RSA_KEY, Buffer.from(subscriptionType._id.toString().toLowerCase() + userToken.toLowerCase())).toString("hex").toLowerCase(),
         }
+        // console.log(subscriptionType._id.toString().toLowerCase())
         //create link with pagelofacil
         // const link = await paguelofacil.createLink(PAGUELOFACIL_CCLW);
         try {
-            const link = await axios.post(`${PAGUELOFACIL_URL}/LinkDeamon.cfm`, paymentInfo)
-            res.json({ success: true, link: link.data })
+            const { data } = await axios.post(`${PAGUELOFACIL_URL}/LinkDeamon.cfm?${new URLSearchParams(paymentInfo).toString()}`, paymentInfo)
+            if (data.headerStatus.code === 200)
+                return res.json({ success: true, link: data.data.url })
+
+            return res.json({ success: false, error: data.headerStatus.description })
         } catch (e) {
             console.log(e);
-            res.status(400).json({ success: false, error: "Error al crear un enlace de pago" })
+            return res.status(400).json({ success: false, error: "Error al crear un enlace de pago" })
         }
     } catch (e) {
         console.log(e)
         return res.status(400).json({ success: false, error: "Error al buscar una subscripción" })
     }
-
-
 
 }

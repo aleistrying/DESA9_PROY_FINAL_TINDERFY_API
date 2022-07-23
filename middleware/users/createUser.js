@@ -3,7 +3,7 @@ const { Users, validate } = require("../../models/users");
 
 module.exports = async (req, res) => {
     const validationResponse = validate(req.body);
-    if (!validationResponse?.success) return res.status(400).send(validationResponse);
+    if (!validationResponse.success) return res.status(400).send(validationResponse);
 
     const user = await Users.findOne({ email: req.body.email });
     if (user)
@@ -20,14 +20,14 @@ module.exports = async (req, res) => {
             email: req.body.email,
             age: req.body.age,
             gender: req.body.gender,
-            birthday: res.body.birthday,
+            birthday: new Date(req.body.birthday),
 
             password: hashPassword,
         })
     } catch (e) {
         console.log(e);
         return res.status(500)
-            .json({ success: false, error: e })
+            .json({ success: false, error: String(e) })
     }
 
     // newUser.password = undefined;

@@ -10,6 +10,8 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const songRoutes = require("./routes/song");
 const playlistRoutes = require("./routes/playlist");
+const subscriptionTypeRoutes = require("./routes/subscriptionType");
+const subscriptionRoutes = require("./routes/subscription");
 const searchRoutes = require("./routes/search");
 const paymentRoutes = require("./routes/payment");
 
@@ -25,26 +27,32 @@ const {
 const mongoDb = `mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DB}`;
 console.log(mongoDb);
 mongoose.connect(mongoDb, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        const db = mongoose.connection;
+        console.log("connected to mongoDB");
+        // db.on("error", console.error.bind(console, "connection error:"));
+        // db.on(, (connection) => {
+        // console.log(db, "connected")
 
-const db = mongoose.connection;
-
-db.on("error", console.error.bind(console, "connection error:"));
-db.on("connection", (connection) => {
-    console.log(connection, "connected")
-
-    //main
-    app.use(cors())
-    app.use(express.json());
+        //main
+        app.use(cors())
+        app.use(express.json());
 
 
-    app.use("/pay", paymentRoutes)
-    app.use("/songs", songRoutes)
-    app.use("/users", userRoutes)
-    app.use("/auth", authRoutes)
-    app.use("/playlists", playlistRoutes)
-    app.use("/search", searchRoutes)
+        app.use("/api/pay", paymentRoutes)
+        app.use("/api/songs", songRoutes)
+        app.use("/api/users", userRoutes)
+        app.use("/api/auth", authRoutes)
+        app.use("/api/playlists", playlistRoutes)
+        app.use("/api/search", searchRoutes)
+        app.use("/api/subscriptions", subscriptionRoutes)
+        app.use("/api/subscription-types", subscriptionTypeRoutes)
 
-    app.listen(PORT, () => {
-        console.log("listening on port: " + PORT);
+        app.listen(PORT, () => {
+            console.log("listening on port: " + PORT);
+        })
     })
-})
+    .catch(err => {
+        console.log("error al iniciar", err);
+    })
+// })

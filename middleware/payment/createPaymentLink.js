@@ -10,12 +10,18 @@ module.exports = async (req, res) => {
     try {
         //validate
         if (!mongoose.Types.ObjectId.isValid(req.params.id))
-            return res.status(400).json({ success: false, error: "subscriptionTypeId is invalid" })
+            return res.status(400).json({
+                success: false,
+                error: "subscriptionTypeId is invalid"
+            })
 
         //check if it exists
         const subscriptionType = await SubscriptionTypes.findById(req.params.id)
         if (!subscriptionType)
-            return res.status(400).json({ success: false, error: "subscriptionType not found" })
+            return res.status(400).json({
+                success: false,
+                error: "subscriptionType not found"
+            })
 
         //get user
         const user = req.user;
@@ -28,11 +34,18 @@ module.exports = async (req, res) => {
         })
 
         if (subscription)
-            return res.status(400).json({ success: false, error: "El usuario ya tiene una subscripción" })
+            return res.status(400).json({
+                success: false,
+                error: "El usuario ya tiene una subscripción"
+            })
 
         const userToken = crypto.randomBytes(32).toString("hex");
         req.user.paymentToken = userToken;
         await req.user.save();
+
+        const verificationHash = crypto.createHmac("sha256", PRI_RSA_KEY)
+            .update(user._id + subscriptionType._id)
+            .digest("hex");
 
         const paymentInfo = {
             CCLW: PAGUELOFACIL_CCLW,
@@ -41,7 +54,10 @@ module.exports = async (req, res) => {
             CTAX: Math.round(subscriptionType.price * 0.07 * 100) / 100,
             RETURN_URL: Buffer.from(URL + "/api/pay/callback").toString("hex"),
             TOKEN: userToken.toLowerCase(),
-            SUB_ID: crypto.privateEncrypt(PRI_RSA_KEY, Buffer.from(subscriptionType._id.toString().toLowerCase() + userToken.toLowerCase())).toString("hex").toLowerCase(),
+            UID: user._id,
+            SID: subscriptionType._id,
+            HASH: verificationHash,
+            // SUB_ID: crypto.privateEncrypt(PRI_RSA_KEY, Buffer.from(subscriptionType._id.toString().toLowerCase() + userToken.toLowerCase())).toString("hex").toLowerCase(),
         }
         // console.log(subscriptionType._id.toString().toLowerCase())
         //create link with pagelofacil

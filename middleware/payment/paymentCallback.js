@@ -1,13 +1,19 @@
 const { Subscriptions } = require("../../models/Subscriptions");
 const { Users } = require("../../models/users");
 const crypto = require("crypto");
-const { FRONTEND_URL, PUB_RSA_KEY } = require("../../config");
+const { FRONTEND_URL, PRIVATE_KEY } = require("../../config");
 const mongoose = require("mongoose");
 
 module.exports = async (req, res) => {
     const { query, body } = req
     console.log({ query })
     try {
+
+        //validate hash
+        const verificationHash = crypto.createHmac("sha256", PRI_RSA_KEY)
+            .update(query.UID + query.SID)
+            .digest("hex");
+
         if (query["Estado"] === "Denegada") {
             console.log("redirecting to failure url:", `${FRONTEND_URL}/payment/failure?${new URLSearchParams(query)}`)
             return res.redirect(`${FRONTEND_URL}/payment/failure?${new URLSearchParams(query)}`)
@@ -24,14 +30,16 @@ module.exports = async (req, res) => {
             return res.status(400).json({ success: false, error: "El token ya no es valido." })
         // try{
 
-        const subscriptionTypeId = crypto.publicDecrypt(PUB_RSA_KEY, Buffer.from(query.SUB_ID.toLowerCase(), "hex"))
-            .toString()
-            .replace(query.TOKEN.toLowerCase(), "")
+
+
+        // const subscriptionTypeId = crypto.publicDecrypt(PUB_RSA_KEY, Buffer.from(query.SUB_ID.toLowerCase(), "hex"))
+        //     .toString()
+        //     .replace(query.TOKEN.toLowerCase(), "")
         // } catch (e) {
         //     console.log(e)
         //     return res.status(400).json({ success: false, error: "El token ya no es valido o tipo de subscripción." })
         // }
-        if (!mongoose.Types.ObjectId.isValid(subscriptionTypeId))
+        if (!mongoose.Types.ObjectId.isValid(query.SID))
             return res.status(400).json({ success: false, error: "Tipo de subscripcion no valido o tipo de subscripción." })
 
         //find subscription
@@ -47,8 +55,9 @@ module.exports = async (req, res) => {
         // await user.save();
 
         delete query.CCLW;
-        delete query.SUB_ID;
-        delete query.TOKEN;
+        delete query.UID;
+        delete query.SID;
+        delete query.HASH;
         //create subscription
         const newSubscription = await Subscriptions.create({
             subscriptionTypeId,

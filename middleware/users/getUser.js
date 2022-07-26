@@ -1,9 +1,10 @@
 const { Users } = require("../../models/users");
+const mongoose = require("mongoose");
 
 module.exports = async (req, res) => {
     //validate object id
     const id = req.params?.id;
-    if (!ObjectId.isValid(id))
+    if (!mongoose.Types.ObjectId.isValid(id))
         return res.status(400).send({ success: false, error: "Id inválido" });
     try {
         const user = await Users.findById(req.params.id).select({

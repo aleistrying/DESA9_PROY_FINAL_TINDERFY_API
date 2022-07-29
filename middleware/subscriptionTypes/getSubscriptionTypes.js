@@ -1,4 +1,4 @@
-const { SubscriptionTypes } = require("../../models/SubscriptionTypes");
+const { SubscriptionTypes } = require("../../models/subscriptionTypes");
 
 module.exports = async (req, res) => {
     try {

@@ -1,5 +1,5 @@
-const { Subscriptions } = require("../../models/Subscriptions");
-const { SubscriptionTypes } = require("../../models/SubscriptionTypes");
+const { Subscriptions } = require("../../models/subscriptions");
+const { SubscriptionTypes } = require("../../models/subscriptionTypes");
 const mongoose = require("mongoose");
 const axios = require("axios");
 const crypto = require("crypto")

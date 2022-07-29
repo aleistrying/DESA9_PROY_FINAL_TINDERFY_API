@@ -1,5 +1,5 @@
-const { Subscriptions } = require("../../models/Subscriptions");
-const { SubscriptionTypes } = require("../../models/SubscriptionTypes");
+const { Subscriptions } = require("../../models/subscriptions");
+const { SubscriptionTypes } = require("../../models/subscriptionTypes");
 const { Users } = require("../../models/users");
 const crypto = require("crypto");
 const { FRONTEND_URL, PRIVATE_KEY } = require("../../config");

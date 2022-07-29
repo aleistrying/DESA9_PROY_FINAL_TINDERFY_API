@@ -23,36 +23,8 @@ module.exports = async (req, res) => {
         await SwipedSongs.create({
             userId: req.user._id,
             songId: song._id,
-            type: "like",
+            type: "dislike",
         });
-
-        // const user = await Users.findById(req.user._id);
-        const user = req.user;
-        const index = user.likedSongs.indexOf(song._id);
-        if (index === -1)
-            user.likedSongs.push(song._id);
-        else
-            user.likedSongs.splice(index, 1);
-        await user.save();
-
-        //add to default playlist
-        let playlist = await Playlists.findOne({ isDefault: true });
-        if (!playlist) {
-            //find if user has any other playlist
-            playlist = await Playlists.findOne({ userId: req.user._id });
-            //set as default if found
-            if (playlist)
-                playlist.isDefault = true;
-            else //create default playlist
-                playlist = await Playlists.create({
-                    name: "Playlist por defecto",
-                    isDefault: true,
-                    userId: user._id,
-                    description: "Playlist por defecto creada automáticamente"
-                });
-        }
-        playlist.push(song._id);
-        await playlist.save();
 
         res.status(200).send({ success: true });
     } catch (e) {

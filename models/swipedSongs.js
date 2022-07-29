@@ -11,6 +11,10 @@ const swipedSongsSchema = new mongoose.Schema({
         ref: "songs",
         required: true,
     },
+    type: {
+        type: String,
+        enum: ["like", "dislike"],
+    },
     createdAt: {
         type: Date,
         default: Date.now,

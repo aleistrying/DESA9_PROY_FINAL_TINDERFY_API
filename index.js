@@ -44,7 +44,7 @@ mongoose.connect(mongoDb, { useNewUrlParser: true, useUnifiedTopology: true })
         app.use(express.json());
         app.use((req, res, next) => {
             //log every route name
-            console.log(req.url)
+            // console.log(req.url)
             next();
         })
 

@@ -5,6 +5,7 @@ module.exports = {
     updateUser: require("./updateUser"),
     deleteUser: require("./deleteUser"),
     likeSong: require("./likeSong"),
+    dislikeSong: require("./dislikeSong"),
     getLikedSongs: require("./getLikedSongs"),
     getUserSubscription: require("./getUserSubscription"),
     getUserInfo: require("./getUserInfo"),

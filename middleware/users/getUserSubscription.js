@@ -1,4 +1,4 @@
-const Subscriptions = require("../../models/Subscriptions");
+const Subscriptions = require("../../models/subscriptions");
 
 module.exports = (req, res) => {
     try {

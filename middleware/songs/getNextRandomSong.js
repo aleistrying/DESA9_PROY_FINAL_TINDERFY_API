@@ -1,5 +1,5 @@
 const { Songs } = require("../../models/songs");
-const { Subscriptions } = require("../../models/Subscriptions");
+const { Subscriptions } = require("../../models/subscriptions");
 const { SwipedSongs } = require("../../models/swipedSongs");
 module.exports = async (req, res) => {
     try {
@@ -24,11 +24,13 @@ module.exports = async (req, res) => {
 
         const swipedSongs = await SwipedSongs.find({
             userId: req.user._id,
-        }).sort({ createdAt: -1 }).lean();
+        }).sort({ createdAt: -1 });
 
         const songs = await Songs.find({
             _id: { $nin: swipedSongs.map(swipe => swipe.songId) },
         });
+        // console.log(swipedSongs.map(swipe => swipe.songId))
+        // console.log(swipedSongs.length, songs.length);
 
         if (songs.length === 0)
             return res.status(200).send({ success: false, error: "No hay nuevas canciones disponibles para tí" });
@@ -38,7 +40,7 @@ module.exports = async (req, res) => {
         req.user.dailySongsRequested = req.user.dailySongsRequested + 1;
         await req.user.save()
 
-
+        console.log(song)
         res.status(200).send({ success: true, song });
 
         if (!songs.length)

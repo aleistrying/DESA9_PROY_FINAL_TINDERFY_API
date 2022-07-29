@@ -22,5 +22,6 @@ subscriptionTypesSchema.pre("save", function (next) {
     this.updatedAt = Date.now();
     next();
 });
+const SubscriptionTypes = mongoose.model("subscription-types", subscriptionTypesSchema);
 
-module.exports = { SubscriptionTypes: mongoose.model("subscription-types", subscriptionTypesSchema) }
+module.exports = { SubscriptionTypes }

@@ -38,11 +38,6 @@ module.exports = async (req, res) => {
         req.user.dailySongsRequested = req.user.dailySongsRequested + 1;
         await req.user.save()
 
-        //one song is shown then we add it to the swipewd list
-        await SwipedSongs.create({
-            userId: req.user._id,
-            songId: song._id,
-        });
 
         res.status(200).send({ success: true, song });
 

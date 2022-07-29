@@ -1,4 +1,5 @@
 const { Subscriptions } = require("../../models/Subscriptions");
+const { SubscriptionTypes } = require("../../models/SubscriptionTypes");
 const { Users } = require("../../models/users");
 const crypto = require("crypto");
 const { FRONTEND_URL, PRIVATE_KEY } = require("../../config");
@@ -13,6 +14,24 @@ module.exports = async (req, res) => {
         const verificationHash = crypto.createHmac("sha256", PRI_RSA_KEY)
             .update(query.UID + query.SID)
             .digest("hex");
+        if (!crypto.timingSafeEqual(verificationHash, query.HASH)) {
+            return res.status(400).json({
+                success: false,
+                error: "Algo salio mal"
+            })
+        }
+        //check object ids
+        if (!mongoose.Types.ObjectId.isValid(query.UID))
+            return res.status(400).json({
+                success: false,
+                error: "Id de usuario invalido"
+            })
+        else if (!mongoose.Types.ObjectId.isValid(query.SID))
+            return res.status(400).json({
+                success: false,
+                error: "Id de tipo de subscripcion invalido"
+            })
+
 
         if (query["Estado"] === "Denegada") {
             console.log("redirecting to failure url:", `${FRONTEND_URL}/payment/failure?${new URLSearchParams(query)}`)
@@ -22,10 +41,7 @@ module.exports = async (req, res) => {
         // return res.status(200).json({ success: false, error: "El pago negado, volver a intentar con otra tarjeta o agregar fondos porfavor." })
 
         //get user
-        const user = await Users.findOne({
-            paymentToken: query.TOKEN.toLowerCase()
-        });
-
+        const user = await Users.findById(query.UID)
         if (!user)
             return res.status(400).json({ success: false, error: "El token ya no es valido." })
         // try{
@@ -39,7 +55,12 @@ module.exports = async (req, res) => {
         //     console.log(e)
         //     return res.status(400).json({ success: false, error: "El token ya no es valido o tipo de subscripción." })
         // }
-        if (!mongoose.Types.ObjectId.isValid(query.SID))
+        // if (!mongoose.Types.ObjectId.isValid(query.SID))
+        //     return res.status(400).json({ success: false, error: "Tipo de subscripcion no valido o tipo de subscripción." })
+
+        //find subscription type if it exists
+        const subscriptionType = await SubscriptionTypes.findById(query.SID)
+        if (!subscriptionType)
             return res.status(400).json({ success: false, error: "Tipo de subscripcion no valido o tipo de subscripción." })
 
         //find subscription
@@ -58,9 +79,10 @@ module.exports = async (req, res) => {
         delete query.UID;
         delete query.SID;
         delete query.HASH;
+
         //create subscription
         const newSubscription = await Subscriptions.create({
-            subscriptionTypeId,
+            subscriptionTypeId: subscriptionType._id,
             userId: user._id,
             isActive: true,
             paymentInfo: query,

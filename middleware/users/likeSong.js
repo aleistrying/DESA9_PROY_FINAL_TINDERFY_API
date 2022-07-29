@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Playlists } = require("../../models/playlists");
 const { Songs } = require("../../models/songs");
+const { SwipedSongs } = require("../../models/swipedSongs");
 const { Users } = require("../../models/users");
 
 module.exports = async (req, res) => {
@@ -10,6 +11,12 @@ module.exports = async (req, res) => {
     try {
         const song = await Songs.findById(req.params.id);
         if (!song) return res.status(400).send({ success: false, error: "La canción no existe" });
+
+        //one song is shown then we add it to the swipewd list
+        await SwipedSongs.create({
+            userId: req.user._id,
+            songId: song._id,
+        });
 
         // const user = await Users.findById(req.user._id);
         const user = req.user;

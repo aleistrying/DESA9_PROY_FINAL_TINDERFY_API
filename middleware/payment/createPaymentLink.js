@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(req.params.id))
             return res.status(400).json({
                 success: false,
-                error: "subscriptionTypeId is invalid"
+                error: "Id de la subscripcion es invalido"
             })
 
         //check if it exists
@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
         if (!subscriptionType)
             return res.status(400).json({
                 success: false,
-                error: "subscriptionType not found"
+                error: "El tipo de subscripcion no se encontro"
             })
 
         //get user
@@ -39,8 +39,8 @@ module.exports = async (req, res) => {
                 error: "El usuario ya tiene una subscripción"
             })
 
-        const userToken = crypto.randomBytes(32).toString("hex");
-        req.user.paymentToken = userToken;
+        // const userToken = crypto.randomBytes(32).toString("hex");
+        // req.user.paymentToken = userToken;
         await req.user.save();
 
         const verificationHash = crypto.createHmac("sha256", PRI_RSA_KEY)
@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
             CDSC: "Compra de " + subscriptionType.name,
             CTAX: Math.round(subscriptionType.price * 0.07 * 100) / 100,
             RETURN_URL: Buffer.from(URL + "/api/pay/callback").toString("hex"),
-            TOKEN: userToken.toLowerCase(),
+            // TOKEN: userToken.toLowerCase(),
             UID: user._id,
             SID: subscriptionType._id,
             HASH: verificationHash,

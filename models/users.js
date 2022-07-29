@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema({
         },
         default: {}
     },
-    paymentToken: { type: String, default: null },
+    // paymentToken: { type: String, default: null },
     dailySongsRequested: { type: Number, default: 0 },
     songLimit: { type: Number, default: 2 },
 })

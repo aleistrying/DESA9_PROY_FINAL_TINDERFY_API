@@ -7,4 +7,5 @@ module.exports = {
     likeSong: require("./likeSong"),
     getLikedSongs: require("./getLikedSongs"),
     getUserSubscription: require("./getUserSubscription"),
+    getUserInfo: require("./getUserInfo"),
 }

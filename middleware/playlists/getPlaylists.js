@@ -2,6 +2,7 @@ const { Playlists } = require("../../models/playlists");
 
 module.exports = async (req, res) => {
     try {
+
         const playlists = await Playlists.find();
         if (!playlists)
             return res.json({ success: false, error: "No hay playlists" });

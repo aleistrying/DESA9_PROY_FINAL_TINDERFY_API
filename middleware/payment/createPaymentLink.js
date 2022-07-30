@@ -3,7 +3,7 @@ const { SubscriptionTypes } = require("../../models/subscriptionTypes");
 const mongoose = require("mongoose");
 const axios = require("axios");
 const crypto = require("crypto")
-const { PAGUELOFACIL_CCLW, URL, PAGUELOFACIL_URL, PRI_RSA_KEY } = require("../../config");
+const { PAGUELOFACIL_CCLW, URL, PAGUELOFACIL_URL, PRI_RSA_KEY, SUPER_SECRET } = require("../../config");
 
 module.exports = async (req, res) => {
 
@@ -41,11 +41,12 @@ module.exports = async (req, res) => {
 
         // const userToken = crypto.randomBytes(32).toString("hex");
         // req.user.paymentToken = userToken;
-        await req.user.save();
-
-        const verificationHash = crypto.createHmac("sha256", PRI_RSA_KEY)
+        // await req.user.save();
+        const verificationHash = crypto.createHmac("sha256", String(SUPER_SECRET))
             .update(user._id + subscriptionType._id)
             .digest("hex");
+        req.user.paymentToken = verificationHash;
+        await req.user.save();
 
         const paymentInfo = {
             CCLW: PAGUELOFACIL_CCLW,

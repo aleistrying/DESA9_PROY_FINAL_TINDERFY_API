@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const { checkToken, isAdmin } = require("../middleware/auth");
 const { createUser, getUsers, getUser, updateUser,
-    deleteUser, getUserSubscription, getUserInfo } = require("../middleware/users")
+    deleteUser, getUserSubscription, getUserInfo,
+    getUserPlaylists } = require("../middleware/users")
 
 // create user
 router.post("/", createUser);
@@ -23,5 +24,8 @@ router.get("/subscription", checkToken, getUserSubscription);
 
 //
 router.get("/self/info", checkToken, getUserInfo);
+
+
+router.get("/self/playlists", checkToken, getUserPlaylists);
 
 module.exports = router;

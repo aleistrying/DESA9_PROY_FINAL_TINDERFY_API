@@ -7,8 +7,8 @@ const path = require('path');
 module.exports = async (req, res) => {
     const { query } = req
     // console.log("getting music", query)
-    if (!query.name) return res.status(400).json({ error: 'name is required' })
-    else if (!query.token) return res.status(400).json({ error: 'token is required' })
+    if (!query.name || query.name === "undefined") return res.status(400).json({ success: false, error: 'name is required' })
+    else if (!query.token) return res.status(400).json({ success: false, error: 'token is required' })
     try {
         // const token = req.headers.authorization.split(" ")[1];
         const token = Buffer.from(query.token, "hex").toString("utf8")
@@ -28,6 +28,7 @@ module.exports = async (req, res) => {
     }
 
     try {
+
         //we don't really need to hash the names  it's just a simple app
         const filePath = path.join(__dirname, "../../music/" + query.name);
         // console.log(filePath)

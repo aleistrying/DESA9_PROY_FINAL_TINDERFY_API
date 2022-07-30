@@ -2,7 +2,7 @@ const { Subscriptions } = require("../../models/subscriptions");
 const { SubscriptionTypes } = require("../../models/subscriptionTypes");
 const { Users } = require("../../models/users");
 const crypto = require("crypto");
-const { FRONTEND_URL, PRIVATE_KEY } = require("../../config");
+const { FRONTEND_URL, PRIVATE_KEY, SUPER_SECRET } = require("../../config");
 const mongoose = require("mongoose");
 
 module.exports = async (req, res) => {
@@ -11,10 +11,20 @@ module.exports = async (req, res) => {
     try {
 
         //validate hash
-        const verificationHash = crypto.createHmac("sha256", PRI_RSA_KEY)
+        const verificationHash = crypto.createHmac("sha256", String(SUPER_SECRET))
             .update(query.UID + query.SID)
             .digest("hex");
-        if (!crypto.timingSafeEqual(verificationHash, query.HASH)) {
+        //find user with hash
+        // const user = await Users.findOne({
+        //     paymentToken: verificationHash,
+        // })
+        // if(!user)
+        //     return res.status(400).json({   
+        //         success: false,
+        //         error: "Usuario no encontrado"
+        //     })
+
+        if (!crypto.timingSafeEqual(Buffer.from(verificationHash, "hex"), Buffer.from(query.HASH, "hex"))) {
             return res.status(400).json({
                 success: false,
                 error: "Algo salio mal"
@@ -91,7 +101,7 @@ module.exports = async (req, res) => {
 
         // return res.status(200).json({ success: true, subscription: newSubscription })
         console.log("redirecting to success url:", `${FRONTEND_URL}/payment/success?${new URLSearchParams(query)}`)
-        return res.redirect(`${FRONTEND_URL}/payment/success?${new URLSearchParams(newSubscription)}`)
+        return res.redirect(`${FRONTEND_URL}/payment/success?${new URLSearchParams(query)}`)
     } catch (e) {
         console.log(e)
         return res.status(400).json({ success: false, error: "Error al crear una subscripcion" })

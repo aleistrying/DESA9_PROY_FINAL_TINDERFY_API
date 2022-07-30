@@ -6,7 +6,7 @@ const playListSchema = new mongoose.Schema({
     name: { type: String, required: true },
     userId: { type: ObjectId, ref: "users", required: true },
     description: { type: String },
-    songs: { type: Array, default: [] },
+    songs: { type: Array, default: [], ref: "songs" },
     image: { type: String, default: "http://simpleicon.com/wp-content/uploads/playlist.png" },
     isDefault: { type: Boolean, default: false },
 });
